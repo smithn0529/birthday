@@ -21,13 +21,13 @@
     }
 
     body.bg1 {
-      background: url('background1.png') no-repeat center center fixed;
+      background: url('background1.png') no-repeat center bottom fixed; /* shifted to bottom */
       background-size: contain;
       background-color: black;
     }
 
     body.bg2 {
-      background: url('background2.png') no-repeat center center fixed;
+      background: url('background2.png') no-repeat center bottom fixed; /* shifted to bottom */
       background-size: contain;
       background-color: black;
     }
@@ -51,17 +51,6 @@
       text-align: center;
       background: #222;
       color: #fff;
-    }
-
-    .flash {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at 50% 60%, rgba(255,255,200,0.9) 0px, transparent 400px);
-      opacity: 0;
-      transition: opacity 2s ease;
-      pointer-events: none;
-      z-index: 3;
     }
 
     .message {
@@ -104,7 +93,6 @@
     <input type="text" id="nameInput" placeholder="Type here and press Enter" />
   </div>
 
-  <div class="flash" id="flashlight"></div>
   <div class="message" id="birthdayMessage"></div>
 
   <canvas id="heartCanvas"></canvas>
@@ -113,7 +101,6 @@
   <script>
     const nameInput = document.getElementById('nameInput');
     const nameBox = document.getElementById('nameBox');
-    const flashlight = document.getElementById('flashlight');
     const message = document.getElementById('birthdayMessage');
     const music = document.getElementById('music');
     const body = document.body;
@@ -126,20 +113,19 @@
 
     function startSurprise() {
       nameBox.style.display = 'none';
-      flashlight.style.opacity = 1;
 
       setTimeout(() => {
         body.classList.add('bg0');
         startBackgroundCycle();
-      }, 1500);
+      }, 500);
 
       setTimeout(() => {
-        message.innerHTML = `🎉 HAPPY BIRTHDAY TO YOU 🎉<br><span class="name"> LAXMI </span>`;
+        message.innerHTML = `🎉 HAPPY BIRTHDAY TO YOU 🎉<br><span class="name">❤️ LAXMI ❤️</span>`;
         message.style.opacity = 1;
         message.style.transform = 'translate(-50%, -50%) scale(1)';
         music.play();
         startHearts();
-      }, 2500);
+      }, 1500);
     }
 
     const backgrounds = ['bg0', 'bg1', 'bg2'];
