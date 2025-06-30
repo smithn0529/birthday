@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Birthday Flash Surprise</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+      background: black;
+      transition: background 3s ease;
+    }
+
+    body.bg0 {
+      background: url('background.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    body.bg1 {
+      background: url('background1.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    body.bg2 {
+      background: url('background2.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    #nameBox {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      text-align: center;
+      z-index: 10;
+    }
+
+    #nameBox input {
+      padding: 10px 20px;
+      font-size: 20px;
+      border-radius: 5px;
+      border: none;
+      outline: none;
+      text-align: center;
+      background: #222;
+      color: #fff;
+    }
+
+    .flash {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 60%, rgba(255,255,200,0.9) 0px, transparent 400px);
+      opacity: 0;
+      transition: opacity 2s ease;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .message {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      font-size: 3em;
+      color: #fff;
+      text-shadow: 0 0 10px yellow, 0 0 20px red;
+      opacity: 0;
+      transition: all 3s ease-in-out;
+      z-index: 4;
+      text-align: center;
+      line-height: 1.4em;
+    }
+
+    .message span.name {
+      display: block;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #FF69B4;
+      text-shadow: 0 0 15px #fff, 0 0 30px red;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="nameBox">
+    <h2>Enter your name</h2>
+    <input type="text" id="nameInput" placeholder="Type here and press Enter" />
+  </div>
+
+  <div class="flash" id="flashlight"></div>
+  <div class="message" id="birthdayMessage"></div>
+
+  <canvas id="heartCanvas"></canvas>
+  <audio id="music" src="happy-birthday.mp3" preload="auto"></audio>
+
+  <script>
+    const nameInput = document.getElementById('nameInput');
+    const nameBox = document.getElementById('nameBox');
+    const flashlight = document.getElementById('flashlight');
+    const message = document.getElementById('birthdayMessage');
+    const music = document.getElementById('music');
+    const body = document.body;
+
+    nameInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && nameInput.value.trim() !== '') {
+        startSurprise();
+      }
+    });
+
+    function startSurprise() {
+      nameBox.style.display = 'none';
+      flashlight.style.opacity = 1;
+
+      setTimeout(() => {
+        body.classList.add('bg0');
+        startBackgroundCycle();
+      }, 1500);
+
+      setTimeout(() => {
+        message.innerHTML = `🎉 HAPPY BIRTHDAY TO YOU 🎉<br><span class="name"> LAXMI </span>`;
+        message.style.opacity = 1;
+        message.style.transform = 'translate(-50%, -50%) scale(1)';
+        music.play();
+        startHearts();
+      }, 2500);
+    }
+
+    const backgrounds = ['bg0', 'bg1', 'bg2'];
+    let bgIndex = 0;
+
+    function startBackgroundCycle() {
+      setInterval(() => {
+        body.classList.remove(...backgrounds);
+        bgIndex = (bgIndex + 1) % backgrounds.length;
+        body.classList.add(backgrounds[bgIndex]);
+      }, 5000);
+    }
+
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const hearts = [];
+    for (let i = 0; i < 100; i++) {
+      hearts.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 8 + 2,
+        speed: Math.random() * 1.5 + 0.5,
+        opacity: Math.random()
+      });
+    }
+
+    function drawHeart(x, y, size, opacity) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.translate(x, y);
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(0, -size / 2, -size, -size / 2, -size, 0);
+      ctx.bezierCurveTo(-size, size, 0, size * 1.5, 0, size * 2);
+      ctx.bezierCurveTo(0, size * 1.5, size, size, size, 0);
+      ctx.bezierCurveTo(size, -size / 2, 0, -size / 2, 0, 0);
+      ctx.fillStyle = `rgba(255,0,100,${opacity})`;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function startHearts() {
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hearts.forEach(h => {
+          drawHeart(h.x, h.y, h.r, h.opacity);
+          h.y += h.speed;
+          h.opacity = 0.6 + 0.4 * Math.sin(Date.now() * 0.002 + h.x);
+          if (h.y > canvas.height) {
+            h.y = -20;
+            h.x = Math.random() * canvas.width;
+          }
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+  </script>
+</body>
+</html>
